@@ -179,7 +179,7 @@ matriz_por_escalar escalar matriz = [[ escalar * pegar_nesimo i (pegar_nesimo j 
 
 
 -- Matriz inversa da forma 1/det(A) * adj(A)
-matriz_inversa matriz = matriz_por_escalar (1/(determinant m)) (matriz_adjunta m)
+matriz_inversa matriz = matriz_por_escalar (1/(determinant matriz)) (matriz_adjunta matriz)
 
 -- Testes
 main = do
