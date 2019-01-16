@@ -38,21 +38,32 @@ permanent ms =
 ------------------------------------------------------
 ------------------------------------------------------
 
-foldlZipWith::(a -> b -> c) -> (d -> c -> d) -> d -> [a] -> [b]  -> d
-foldlZipWith _ _ u [] _          = u
-foldlZipWith _ _ u _ []          = u
-foldlZipWith f g u (x:xs) (y:ys) = foldlZipWith f g (g u (f x y)) xs ys
+multiplicaMatrizes:: Num a => [[a]] -> [[a]] -> [[a]]  --Função para multiplicar a matriz inversa de A com o vetor de resultados
+multiplicaMatrizes xs ys = multiplicarAdicionar (*) (+) xs ys       --Chamada da função que de fato faz as operações
 
-foldl1ZipWith::(a -> b -> c) -> (c -> c -> c) -> [a] -> [b] -> c
-foldl1ZipWith _ _ [] _          = error "First list is empty"
-foldl1ZipWith _ _ _ []          = error "Second list is empty"
-foldl1ZipWith f g (x:xs) (y:ys) = foldlZipWith f g (f x y) xs ys
+{- Basicamente a função abaixo vai passando vetor por vetor (linha por linha) para as outras funções, pra que cada linha
+da nova matriz possa ser calculada, foi utilizado lambda
+-}
+multiplicarAdicionar::(a -> b -> c) -> (c -> c -> c) -> [[a]] -> [[b]] -> [[c]]     -- Funçãozinha que vai fazendo elemento por elemento
+multiplicarAdicionar f g xs ys = map (\us -> juntandoElemntosVetor (\u vs -> map (f u) vs) (zipWith g) us ys) xs
 
-multAdd::(a -> b -> c) -> (c -> c -> c) -> [[a]] -> [[b]] -> [[c]]
-multAdd f g xs ys = map (\us -> foldl1ZipWith (\u vs -> map (f u) vs) (zipWith g) us ys) xs
+{-
+  A função abaixo verifica possiveis erros e depois manda pra outra função calcular os elementos da nova matriz
+-}
+juntandoElemntosVetor::(a -> b -> c) -> (c -> c -> c) -> [a] -> [b] -> c
+juntandoElemntosVetor _ _ [] _          = error "Lista inicial vazia"
+juntandoElemntosVetor _ _ _ []          = error "Segunda lista vazia"
+juntandoElemntosVetor f g (x:xs) (y:ys) = juntandoElemntos f g (f x y) xs ys
 
-mult:: Num a => [[a]] -> [[a]] -> [[a]]
-mult xs ys = multAdd (*) (+) xs ys
+{-
+  No fim de tudo é aqui que tudo acontece, cada elemento vai sendo calculado de acordo com as linhas e as colunas das matrizes iniciais
+  (lembrando que um elemnto x = XA1.XC1 + YA1.XC2 + ZA1 . XC3 + ...)
+-}
+
+juntandoElemntos::(a -> b -> c) -> (d -> c -> d) -> d -> [a] -> [b]  -> d
+juntandoElemntos _ _ u [] _          = u
+juntandoElemntos _ _ u _ []          = u
+juntandoElemntos f g u  (x:xs)  (y:ys) = juntandoElemntos f g  (g u $ f x y) xs ys
 
 ------------------------------------------------------
 ------------------------------------------------------
@@ -136,7 +147,7 @@ mudar_elemento novoValor linha coluna matriz = do
     let linha = matriz!!index_linha
     -- Pegando a linha, que é apenas uma lista, basta trocar o valor usando trocar_elemento_lista
     let linha_mudada = trocar_elemento_lista index_coluna novoValor linha
-    -- Tendo a linha mudada, basta trocar a linha original pela mudada usando trocar_elemento_lista 
+    -- Tendo a linha mudada, basta trocar a linha original pela mudada usando trocar_elemento_lista
     trocar_elemento_lista index_linha linha_mudada matriz
 
 
@@ -175,4 +186,4 @@ main = do
     print "Iniciando..."
     print $ determinant m
     printar_matriz m
-    printar_matriz (mult m (matriz_inversa m))
+    printar_matriz (multiplicaMatrizes m (matriz_inversa m))
