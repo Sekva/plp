@@ -58,7 +58,7 @@ pegar_nesimo n vetor = vetor!!n
 
 -- Um print de matriz bem simples
 -- Se receber um tail vazio, printa ok
-printar_matriz [] = print "ok"
+printar_matriz [] = putStrLn ""
 printar_matriz matriz = do
     -- Printa a primeira linha
     print (head matriz)
