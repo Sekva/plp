@@ -4,6 +4,18 @@ alternaESoma :: Num a => [a] -> a
 
 -- Seguinto o método de Laplace, na qual é escolhido uma determinada linha e coluna para ser removida e só assim manipular a submatriz gerada
 removerColuna :: Int -> [[a]] -> [[a]]
+-- Para cada linha da matriz, será removido n-ésimo elemento.
+-- Ficou bem simplificado essa forma (saber usar a função map ajuda bastante)
+removerColuna indice = map(removerIndice indice)
+
+removerIndice :: Int -> [[a]] -> [[a]]
+-- Remove primeira coluna
+removerIndice 0 (x:xs) = xs
+-- Dado que 'xs' é toda a matriz menos a primeira coluna, utiliza-se (n-1) ao chamar novamente removerIndice
+-- Essa recursão será feita até que entre no caso em que o íncide a ser removido seja igual a 0
+removerIndice n (x:xs) = x : removerIndice (n-1) xs
+-- Caso genérico, onde o indice não importa
+removerIndice _ [] = []
 
 
 -- Funcao 'principal'
@@ -21,7 +33,11 @@ determinante matriz = calcula matriz
 		-- Válido notar que o 'n' na funcao map está representando o índice da coluna a ser removida. Dessa forma, será gerado um vetor de tamanho 'l' com os demais resultados da determinante de uma matriz 2x2 (que é o caso escrido a cima [calcular])
 		-- Dessa forma, é fácil de entender como ficará os seguintes processos
 		calcula (x:xs) = let tamanho = length x in alternaESoma $ zipWith(*) x $ map(\n -> determinane $ removerColuna n xs) [0..l]
+		-- Coisas válidas de serem notadas:
+			-- A função zipWith nada mais faz do que uma ação aplicada nos elementos de dois vetores. No nosso caso, queremos multiplicar dois números, que nesse caso é o numero do elemento escolhido na qual exclui a linha a linha e a coluna por o determinante da sub-matriz gerada.
+			-- O '$' nada mais é do que uma forma de "dizer" que dalí para o final da linha é parametro para o método anteposto. Por exemplo: [ soma $ a b ]
+			-- No método map foi utilizado a função lambda, no entando, poderia ser feito com mais um where, no entanto, acredito que ficaria mais complicaod de entender: { map calculaDeterminante' [0..l] where calculaDeterminante' p = determinante $ removerColuna p xs }
 
 
-		--Outro caso base, onde a matriz é nula
+		--Outro caso base, onde o determinante é nulo
 		calcula [] = 0
