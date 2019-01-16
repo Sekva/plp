@@ -15,7 +15,7 @@ matriz_adjunta matriz =
     -- Para cada coluna da matriz original é uma nova linha com os elementos calculados,
     -- logo é a matriz transposta da matriz de cofatores, portanto a matriz adjunta
   [
-    [ (-1)^(i+j) * determinante (remover_nesima_linha i (remover_nesima_coluna j matriz))
+    [ (-1)^(i+j) * determinante (remover_nesima_linha i (removerColuna j matriz))
     | i <- [0.. -1+(length matriz)]
     ]
   | j <- [0.. -1+(length matriz)]
