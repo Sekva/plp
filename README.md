@@ -10,3 +10,6 @@
    - Mateus Baltazar
    - Matheus Machado
 ---
+### Compilação
+   - Haskell : `$ make`
+   - Prolog : `$ swipl matriz.pl`
