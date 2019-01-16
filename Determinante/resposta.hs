@@ -1,6 +1,16 @@
 
 -- Fará o processo final (uma funcao separada tornará mais fácil de entender o código)
 alternaESoma :: Num a => [a] -> a
+alternaESoma [] = 0
+alternaESoma vetor = somar vetor 0 0
+	-- Primeiramente, lembre-se do método de Laplace. Lembre-se que precisamos alternar os sinais das somas ao obtermos os valores dos produtos das determinantes das submatrizes por o elemento escolhido.
+	-- É simples de entender lendo como esse código funciona
+	-- Utiliza-se um indice para somar os valores gerados pelo produto. Na qual, dado que o indice seja par, o valor é somado com o resultado, caso seja par, é subtraído.
+	where somar (x:xs) indice resultado = if even indice then soma xs (n + 1) (resultado + x) else somar xs (n + 1) (resultado - x)
+			-- Independente do indice, caso o vetor seja vazio, o resultado será o mesmo.
+		somar [] _ resultado = resultado
+
+
 
 -- Seguinto o método de Laplace, na qual é escolhido uma determinada linha e coluna para ser removida e só assim manipular a submatriz gerada
 removerColuna :: Int -> [[a]] -> [[a]]
