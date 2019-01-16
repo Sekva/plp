@@ -186,4 +186,4 @@ main = do
     print "Iniciando..."
     print $ determinant m
     printar_matriz m
-    printar_matriz (mult m (matriz_inversa m))
+    printar_matriz (multiplicaMatrizes m (matriz_inversa m))
