@@ -37,6 +37,7 @@ pegar_matriz_entrada_c n = [[ inlinePerformIO (getElemento (linha) 1 "c") ] | li
 
 
 main = do
+    putStrLn ""
     putStrLn "Primeiro peguemos a dimensão (inteiro sem sinal):"
     n <- getInt
     let saida = "Então vai ser " ++ (show n) ++ " dimensões, logo vão ser " ++ show (n+1) ++ " vetores"  ++ ", sendo " ++ (show n) ++ " para a matriz A e mais 1 para a matriz C de solução"
@@ -53,4 +54,10 @@ main = do
     print entrada_c
     putStrLn "Logo a matriz coluna C:"
     printar_matriz entrada_c
-    print "Agora é com carlos e baltz"
+    let det = determinante entrada_a
+    print det
+    if det == 0 then do exitFailure else do putStrLn "Determinante diferente de zero, ok"
+    let inv = matriz_inversa entrada_a
+    let ponto = multiplicaMatrizes inv entrada_c
+    print "Ponto comum a todos os planos: "
+    printar_matriz ponto
