@@ -10,6 +10,12 @@
    - Mateus Baltazar
    - Matheus Machado
 ---
+### Instalação:
+	- Para sistemas Debian-Like:
+		sudo apt-get install haskell-platform
+		-> A instalação apenas do ghc não inclui a biblioteca que usamos
+		https://www.haskell.org/platform/linux.html#linux-debian
+---
 ### Compilação
    - Haskell : `$ make`
    - Prolog : `$ swipl matriz.pl`
