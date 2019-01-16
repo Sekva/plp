@@ -20,16 +20,7 @@ alternaESoma vetor = somar vetor 0 0
 removerColuna :: Int -> [[a]] -> [[a]]
 -- Para cada linha da matriz, será removido n-ésimo elemento.
 -- Ficou bem simplificado essa forma (saber usar a função map ajuda bastante)
-removerColuna indice = map(removerIndice indice)
-
-removerIndice :: Int -> [a] -> [a]
--- Remove primeira coluna
-removerIndice 0 (x:xs) = xs
--- Dado que 'xs' é toda a matriz menos a primeira coluna, utiliza-se (n-1) ao chamar novamente removerIndice
--- Essa recursão será feita até que entre no caso em que o íncide a ser removido seja igual a 0
-removerIndice n (x:xs) = x : removerIndice (n-1) xs
--- Caso genérico, onde o indice não importa
-removerIndice _ []     = []
+removerColuna indice = map(remover_nesima_linha indice)
 
 
 multiplicaMatrizes:: Num a => [[a]] -> [[a]] -> [[a]]  --Função para multiplicar a matriz inversa de A com o vetor de resultados
@@ -91,28 +82,10 @@ inserir :: [a] -> [a] -> [[a]]
 inserir v1 v2 = [v1,v2]
 
 
--- Remove a (n+1)ª coluna da matriz
--- Refatorar isso aqui né, ta pegando pt de toda forma, mas por agora nao vou mexer
-remover_nesima_coluna n matriz = do
-    if (length matriz) == 1
-        then do
-            -- Se o tamanho da matriz for 1, tem apenas uma linha, então basta remover a coluna (head usado
-            -- porque ainda é [[a]])
-            let pt = inserir [] (remover_nesima_linha n (head matriz))
-            -- Limpando o [] de [[], [a]]
-            let pt1 = remover_nesima_linha 0 pt
-            pt1;
-        else do
-            -- Se for maior que 1, executo a mesma coisa e chamo recursivamente para o resto exceto por esta lista
-            let pt = inserir [] (remover_nesima_linha n (head matriz))
-            let pt1 = remover_nesima_linha 0 pt
-            pt1 ++ remover_nesima_coluna n (tail matriz);
-
-
 -- Pega a matriz resultante da eliminação da linha e coluna passadas
 pegar_submatriz :: Int -> Int -> [[Float]] -> [[Float]]
 pegar_submatriz linha coluna matriz = do
-    remover_nesima_linha (linha - 1) (remover_nesima_coluna (coluna - 1) matriz)
+    remover_nesima_linha (linha - 1) (removerColuna (coluna - 1) matriz)
 
 
 -- Substitui o valor de um elemento da lista por outro
