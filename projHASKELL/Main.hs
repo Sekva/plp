@@ -14,7 +14,7 @@ getInt :: IO Int
 getInt = do
   entrada <- getLine
   case (readMaybe entrada :: Maybe Int) of
-    Just x -> if x > 0 then return x else putStrLn "Negativo não vale" >> getInt
+    Just x -> if x > 2 then return x else putStrLn "Dimensao deve ser maior que 2" >> getInt
     Nothing -> putStrLn "Isso não é um inteiro" >> getInt
 
 
