@@ -1,42 +1,36 @@
--- Codigo de terceiros --------------------------------
--------------------------------------------------------
+module Utilidades
+    where
 
-sPermutations :: [a] -> [([a], Int)]
-sPermutations = flip zip (cycle [1, -1]) . foldl aux [[]]
-  where
-    aux items x = do
-      (f, item) <- zip (cycle [reverse, id]) items
-      f (insertEv x item)
-    insertEv x [] = [[x]]
-    insertEv x l@(y:ys) = (x : l) : ((y :) <$>) (insertEv x ys)
 
-elemPos :: [[a]] -> Int -> Int -> a
-elemPos ms i j = (ms !! i) !! j
+-- Fará o processo final (uma funcão separada tornará mais fácil de entender)
+alternaESoma :: Num a => [a] -> a
+alternaESoma [] = 0
+alternaESoma vetor = somar vetor 0 0
+    -- Primeiramente, lembre-se do método de Laplace. Lembre-se que precisamos alternar os sinais das somas ao obtermos os valores dos produtos das determinantes das submatrizes por o elemento escolhido.
+    -- É simples de entender lendo como esse código funciona
+    -- Utiliza-se um indice para somar os valores gerados pelo produto. Na qual, dado que o indice seja par, o valor é somado com o resultado, caso seja par, é subtraído.
+   where
+        somar (x:xs) indice resultado = if even indice then somar xs (indice + 1) (resultado + x) else somar xs (indice + 1) (resultado - x)
+            -- Independente do indice, caso o vetor seja vazio, o resultado será o mesmo.
+        somar [] _ resultado = resultado
 
-prod
-  :: Num a
-  => ([[a]] -> Int -> Int -> a) -> [[a]] -> [Int] -> a
-prod f ms = product . zipWith (f ms) [0 ..]
 
-sDeterminant
-  :: Num a
-  => ([[a]] -> Int -> Int -> a) -> [[a]] -> [([Int], Int)] -> a
-sDeterminant f ms = sum . fmap (\(is, s) -> fromIntegral s * prod f ms is)
 
-determinant
-  :: Num a
-  => [[a]] -> a
-determinant ms =
-  sDeterminant elemPos ms . sPermutations $ [0 .. pred . length $ ms]
+-- Seguinto o método de Laplace, na qual é escolhido uma determinada linha e coluna para ser removida e só assim manipular a submatriz gerada
+removerColuna :: Int -> [[a]] -> [[a]]
+-- Para cada linha da matriz, será removido n-ésimo elemento.
+-- Ficou bem simplificado essa forma (saber usar a função map ajuda bastante)
+removerColuna indice = map(removerIndice indice)
 
-permanent
-  :: Num a
-  => [[a]] -> a
-permanent ms =
-  sum . fmap (prod elemPos ms . fst) . sPermutations $ [0 .. pred . length $ ms]
+removerIndice :: Int -> [a] -> [a]
+-- Remove primeira coluna
+removerIndice 0 (x:xs) = xs
+-- Dado que 'xs' é toda a matriz menos a primeira coluna, utiliza-se (n-1) ao chamar novamente removerIndice
+-- Essa recursão será feita até que entre no caso em que o íncide a ser removido seja igual a 0
+removerIndice n (x:xs) = x : removerIndice (n-1) xs
+-- Caso genérico, onde o indice não importa
+removerIndice _ []     = []
 
-------------------------------------------------------
-------------------------------------------------------
 
 multiplicaMatrizes:: Num a => [[a]] -> [[a]] -> [[a]]  --Função para multiplicar a matriz inversa de A com o vetor de resultados
 multiplicaMatrizes xs ys = multiplicarAdicionar (*) (+) xs ys       --Chamada da função que de fato faz as operações
@@ -64,14 +58,6 @@ juntandoElemntos::(a -> b -> c) -> (d -> c -> d) -> d -> [a] -> [b]  -> d
 juntandoElemntos _ _ u [] _          = u
 juntandoElemntos _ _ u _ []          = u
 juntandoElemntos f g u  (x:xs)  (y:ys) = juntandoElemntos f g  (g u $ f x y) xs ys
-
-------------------------------------------------------
-------------------------------------------------------
-
-
--- Matriz de teste
-m = [[3, 5, 1],[2, -1, 0],[-1, 3, 1]]
---m = [[1, 2, 3],[4, 5, 6],[7, 8, 9]]
 
 
 -- Pega o (n+1)º elemento de vetor
@@ -156,34 +142,3 @@ matriz_transposta :: [[a]] -> [[a]]
 matriz_transposta ([]:_) = []
 matriz_transposta matriz = do
     (map head matriz) : matriz_transposta (map tail matriz)
-
-
--- Calculo de matriz adjunta direto criando uma matriz e preenchendo enquanto transpõe
-matriz_adjunta :: Num a => [[a]] -> [[a]]
-matriz_adjunta [] = []
-matriz_adjunta matriz =
-    -- Apenas o determinante dá a matriz menor, multiplicando por (-1)^(i+j) temos a variação de cofatores
-    -- (tabuleiro de xadrez onde o primeiro elemento é (-1)^(1+1) == 1).
-    -- Para cada coluna da matriz original é uma nova linha com os elementos calculados,
-    -- logo é a matriz transposta da matriz de cofatores, portanto a matriz adjunta
-  [
-    [ (-1)^(i+j) * determinant (remover_nesima_linha i (remover_nesima_coluna j matriz))
-    | i <- [0.. -1+(length matriz)]
-    ]
-  | j <- [0.. -1+(length matriz)]
-  ]
-
-
--- Multiplicando cada elemento da matriz por um escalar qualquer
-matriz_por_escalar escalar matriz = [[ escalar * pegar_nesimo i (pegar_nesimo j matriz) | i <- [0.. -1+(length matriz)]] | j <- [0.. -1+(length matriz)]]
-
-
--- Matriz inversa da forma 1/det(A) * adj(A)
-matriz_inversa matriz = matriz_por_escalar (1/(determinant matriz)) (matriz_adjunta matriz)
-
--- Testes
-main = do
-    print "Iniciando..."
-    print $ determinant m
-    printar_matriz m
-    printar_matriz (multiplicaMatrizes m (matriz_inversa m))

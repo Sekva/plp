@@ -1,17 +1,17 @@
-import Text.Read
-import Data.Text.Unsafe
-import System.Exit
+module Main
+    where
 
-printar_matriz [] = return ()
-printar_matriz matriz = do
-    -- Printa a primeira linha
-    print (head matriz)
-    -- Chama recursivamente para todas as outras linhas
-    printar_matriz (tail matriz)
+import           Data.Text.Unsafe
+import           System.Exit
+import           Text.Read
+
+import           Determinante
+import           Matriz_inversa
+import           Utilidades
 
 
-getInt :: IO Int          
-getInt = do 
+getInt :: IO Int
+getInt = do
   entrada <- getLine
   case (readMaybe entrada :: Maybe Int) of
     Just x -> if x > 0 then return x else putStrLn "Negativo não vale" >> getInt
@@ -49,7 +49,7 @@ main = do
     putStrLn "A seguinte matriz:"
     printar_matriz entrada_a
     putStrLn "C e uma matriz coluna"
-    let entrada_c = pegar_matriz_entrada_c (n)
+    let entrada_c = pegar_matriz_entrada_c n
     print entrada_c
     putStrLn "Logo a matriz coluna C:"
     printar_matriz entrada_c
